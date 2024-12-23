@@ -20,6 +20,8 @@ public class GameOverPanelController : MonoBehaviour
     private PlayerController playerControllerScript;
     
     private int PlayerWin; 
+
+    private bool ThisPanelActive = false;
     void Start()
     {
         exitBtn.onClick.AddListener(OnClickExitBtn);
@@ -34,18 +36,27 @@ public class GameOverPanelController : MonoBehaviour
 
     void OnClickContinueBtn()
     {
+        this.ThisPanelActive = false;
         DeActive();   
         gameControllerScript.OriginBoard();
         if (PlayerWin == 1){
             playerControllerScript.IncPlayerPoint(PlayerWin);
             player1Point.text = playerControllerScript.GetPlayerPoint(this.PlayerWin).ToString();
+            
             playerControllerScript.StopAllCoroutine();
+            if (playerControllerScript.GetIsPvp()) playerControllerScript.ChangePlayer();
             playerControllerScript.StartTimer(60);
         }
         if (PlayerWin == -1){
             playerControllerScript.IncPlayerPoint(PlayerWin);
             player2Point.text = playerControllerScript.GetPlayerPoint(this.PlayerWin).ToString();
             playerControllerScript.StopAllCoroutine();
+            if (playerControllerScript.GetIsPvp()) playerControllerScript.ChangePlayer();
+            playerControllerScript.StartTimer(60);
+        }
+        if (PlayerWin == 0){
+            playerControllerScript.StopAllCoroutine();
+            if (playerControllerScript.GetIsPvp()) playerControllerScript.ChangePlayer();
             playerControllerScript.StartTimer(60);
         }
     }
@@ -57,7 +68,8 @@ public class GameOverPanelController : MonoBehaviour
     public void SetActivePanel(int player)
     {
         this.gameObject.SetActive(true);
-        
+        this.ThisPanelActive = true;
+        playerControllerScript.StopAllCoroutine();
         //gameOverPanel.GetComponent<Text>().text = content;
         if (player == 1){
             this.gameOverPanel.GetComponentInChildren<Text>().text = "Player1 Win!";
@@ -78,5 +90,8 @@ public class GameOverPanelController : MonoBehaviour
     void DeActive()
     {
         this.gameObject.SetActive(false);
+    }
+    public bool GetThisPanelActive(){
+        return this.ThisPanelActive;
     }
 }

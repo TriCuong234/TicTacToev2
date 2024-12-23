@@ -43,16 +43,12 @@ public class CellSingleton : MonoBehaviour
         {
             r = 0;
             c = name % 10;
-            this.gameObject.GetComponent<Button>().interactable = false;
-            ChangSprite(playerControllerScript.PlayerNow());
-            playerControllerScript.CellClick(r, c);
+            ChangeBtnOnClick(r,c);
             return;
         }
         r = name / 10;
         c = name % 10;
-        this.gameObject.GetComponent<Button>().interactable = false;
-        ChangSprite(playerControllerScript.PlayerNow());
-        playerControllerScript.CellClick(r, c);
+        ChangeBtnOnClick(r,c);
 
     }
 
@@ -61,7 +57,6 @@ public class CellSingleton : MonoBehaviour
         Image imageBtn = this.gameObject.GetComponent<Image>();
         if (player == 1)
         {
-
             imageBtn.sprite = OSprite;
             imageBtn.type = Image.Type.Simple;
             imageBtn.preserveAspect = true;
@@ -72,11 +67,32 @@ public class CellSingleton : MonoBehaviour
         imageBtn.preserveAspect = true;
     }
 
-    public void ResetAllChanged(){
+    public void ResetAllChanged()
+    {
         Button btn = this.gameObject.GetComponent<Button>();
         btn.interactable = true;
         Image img = this.gameObject.GetComponent<Image>();
         img.sprite = null;
         img.type = Image.Type.Simple;
     }
+
+    public void ChangeBtnOnClick(int r, int c)
+    {
+        this.gameObject.GetComponent<Button>().interactable = false;
+        ChangSprite(playerControllerScript.PlayerNow());
+        playerControllerScript.CellClick(r, c);
+        if (playerControllerScript.PlayerWin(r,c) == 1 || playerControllerScript.PlayerWin(r,c) == -1)
+        {
+            return;
+        }
+        playerControllerScript.ChangePlayer();
+
+    }
+
+    public void ChangeBtnAiPick(int r, int c)
+    {
+        this.gameObject.GetComponent<Button>().interactable = false;
+        ChangSprite(-1);
+        return;
+    }   
 }

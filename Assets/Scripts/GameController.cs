@@ -84,16 +84,19 @@ public class GameController : MonoBehaviour
         return count;
     }
 
-    public bool CheckWin(int r, int c){
+    public bool CheckWin(int r, int c,int player){
         // 
         if (board[0,c] == board[1,c] && board[1,c] == board[2,c])
         return true;
         if (board[r,0] == board[r,1] && board[r,1] == board[r,2])
         return true;
-        if (board[0,0] == board[1,1] && board[1,1] == board[2,2])
+        if (board[0,0] == board[1,1] && board[1,1] == board[2,2] && board[1,1] == player)
         return true;
-        if (board[0,2] == board[1,1] && board[1,1] == board[2,0])
+        if (board[0,2] == board[1,1] && board[1,1] == board[2,0] && board[1,1] == player)
         return true;
         return false;
+    }
+    public int[,] getBoard(){
+        return this.board;
     }
 }

@@ -1,6 +1,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     // Start is called before the first frame update
     private GameObject gameController;
+    [SerializeField]
+    // Start is called before the first frame update
+    private AiSystem ai;
     GameController gameControllerScript;
     // Start is called before the first frame update
     public GameObject gameOverPanel;
@@ -18,6 +22,9 @@ public class PlayerController : MonoBehaviour
 
     private int player1Point = 0;
     private int player2Point = 0;
+
+    private bool isPvP = false;
+
 
     public GameObject gameInfoContainer;
 
@@ -45,27 +52,35 @@ public class PlayerController : MonoBehaviour
 
     public void ChangePlayer()
     {
-        this.player = -this.player;
+        // neu nguoi voi nguoi
+
+        if (isPvP)
+        {
+            this.player = -this.player;
+            StopAllCoroutines();
+            StartCoroutine(PlayerTimer(60));
+        }
+        else
+        {
+            if (this.player == 1)
+            {
+                StopAllCoroutines();
+                StartCoroutine(PlayerTimer(60));
+                this.player = -1;
+                // Call AI turn
+                ai.AITurn();
+                return;
+            }
+        }
+        //AI turn lam gi di chu
     }
 
     public void CellClick(int r, int c)
     {
+
         gameControllerScript.CheckBoard(r, c, this.player);
         //checkwin
-        if (gameControllerScript.BoardLength() > 4)
-        {
-            if (gameControllerScript.CheckWin(r, c))
-            {
-                gameOverPanel.GetComponent<GameOverPanelController>().SetActivePanel(this.player);
-            }
-            if (!gameControllerScript.CheckWin(r, c) && gameControllerScript.BoardLength() == 9)
-            {
-                gameOverPanel.GetComponent<GameOverPanelController>().SetActivePanel(0);
-            }
-        }
-        StopAllCoroutine();
-        ChangePlayer();
-        StartCoroutine(PlayerTimer(60));
+        
         //return (r,c);
     }
     public void IncPlayerPoint(int player)
@@ -87,19 +102,10 @@ public class PlayerController : MonoBehaviour
         return this.player2Point;
     }
 
-    public void PlayerTimer(int player, int time)
-    {
-        if (player == 1)
-        {
-            Player1Timer.text = "00:" + time;
-
-        }
-    }
 
     public IEnumerator PlayerTimer(int time)
     {
         int count = time;
-        print("hehe");
         if (player == 1)
         {
             Player2Timer.text = "";
@@ -148,12 +154,49 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    public void StartTimer(int time){
+    public void StartTimer(int time)
+    {
         StartCoroutine(PlayerTimer(time));
     }
 
     public void StopAllCoroutine()
     {
         StopAllCoroutines();
+    }
+
+    public bool GetIsPvp()
+    {
+        return this.isPvP;
+    }
+
+    public void AiToPlayer()
+    {
+        this.player = 1;
+    }
+
+    public int PlayerWin(int r, int c)
+    {
+        if (gameControllerScript.BoardLength() > 4)
+        {
+            if (gameControllerScript.CheckWin(r, c, this.player))
+            {
+
+                gameOverPanel.GetComponent<GameOverPanelController>().SetActivePanel(this.player);
+                StopAllCoroutines();
+                return 1;
+            }
+            if (!gameControllerScript.CheckWin(r, c, this.player) && gameControllerScript.BoardLength() == 9)
+            {
+                StopAllCoroutines();
+                gameOverPanel.GetComponent<GameOverPanelController>().SetActivePanel(0);
+                return -1;
+            }
+        }
+        return 0;
+    }
+
+    public void ShowOverPanel(){
+        gameOverPanel.GetComponent<GameOverPanelController>().SetActivePanel(this.player);
+        return;
     }
 }
