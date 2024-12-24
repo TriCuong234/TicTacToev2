@@ -6,21 +6,19 @@ using UnityEngine.UI;
 public class AiSystem : MonoBehaviour
 {
     private int mode;
-    // Start is called before the first frame update
     [SerializeField]
-
     private GameController gameController;
     [SerializeField]
     private PlayerController playerController;
     [SerializeField]
     private GameOverPanelController gameOverPanel;
     private List<Vector2> vectorList = new List<Vector2>();
+
     void Start()
     {
         this.mode = PlayerPrefs.GetInt("Mode");
     }
 
-    // Update is called once per frame
     void Update()
     {
 
@@ -32,69 +30,132 @@ public class AiSystem : MonoBehaviour
         switch (this.mode)
         {
             case 0:
-                {
-                    int[,] board = gameController.getBoard();
-                    for (int i = 0; i < 3; i++)
-                    {
-                        for (int j = 0; j < 3; j++)
-                        {
-                            if (board[i, j] == 0)
-                            {
-                                board[i, j] = -1;
-                                if (gameController.CheckWin(i, j, -1))
-                                {
-                                    ChangeBtnAiCheck(i, j);
-                                    gameOverPanel.GetComponent<GameOverPanelController>().SetActivePanel(-1);
-                                    return; // Nếu AI thắng, kết thúc lượt
-                                }
-                                board[i, j] = 0; // Hoàn tác nước đi nếu không thắng
-                            }
-                        }
-                    }
-                    // Nếu không thể thắng, AI đánh ngẫu nhiên
-                    Vector2 temp = vectorList[Random.Range(0, vectorList.Count)];
-                    board[(int)temp.x, (int)temp.y] = -1;
-                    ChangeBtnAiCheck((int)temp.x, (int)temp.y);
-                    playerController.AiToPlayer();
-                    vectorList.Clear();
-                    break;
-                }
+                EasyMode();
+                break;
             case 1:
-                print("hehe");
+                MediumMode();
                 break;
             case 2:
+                HardMode();
+                break;
+        }
+    }
+
+    void EasyMode()
+    {
+        int[,] board = gameController.getBoard();
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                if (board[i, j] == 0)
                 {
-                    int[,] board = gameController.getBoard();
-                    int bestScore = int.MinValue;
-                    Vector2 bestMove = Vector2.zero; for (int i = 0; i < 3; i++)
+                    board[i, j] = -1;
+                    if (gameController.CheckWin(i, j, -1))
                     {
-                        for (int j = 0; j < 3; j++)
-                        {
-                            if (board[i, j] == 0)
-                            {
-                                board[i, j] = -1; // AI move 
-                                int score = Minimax(board, i, j, 0, false);
-                                board[i, j] = 0; // Undo move 
-                                if (score > bestScore) { bestScore = score; bestMove = new Vector2(i, j); }
-                            }
-                        }
-                    } // Thực hiện nước đi tốt nhất 
-                    board[(int)bestMove.x, (int)bestMove.y] = -1;
-                    ChangeBtnAiCheck((int)bestMove.x, (int)bestMove.y);
-                    if (gameController.CheckWin((int)bestMove.x, (int)bestMove.y, -1)) { gameOverPanel.GetComponent<GameOverPanelController>().SetActivePanel(-1); } else { playerController.AiToPlayer(); }
-                    vectorList.Clear();
-                    break;
+                        ChangeBtnAiCheck(i, j);
+                        gameOverPanel.GetComponent<GameOverPanelController>().SetActivePanel(-1);
+                        return; // Nếu AI thắng, kết thúc lượt
+                    }
+                    board[i, j] = 0; // Hoàn tác nước đi nếu không thắng
                 }
+            }
+        }
+        // Nếu không thể thắng, AI đánh ngẫu nhiên
+        Vector2 temp = vectorList[Random.Range(0, vectorList.Count)];
+        board[(int)temp.x, (int)temp.y] = -1;
+        ChangeBtnAiCheck((int)temp.x, (int)temp.y);
+        playerController.AiToPlayer();
+        vectorList.Clear();
+    }
+
+    void MediumMode()
+    {
+        int[,] board = gameController.getBoard();
+        // Kiểm tra nếu có thể thắng hoặc chặn người chơi thắng
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                if (board[i, j] == 0)
+                {
+                    board[i, j] = -1;
+                    if (gameController.CheckWin(i, j, -1))
+                    {
+                        ChangeBtnAiCheck(i, j);
+                        gameOverPanel.GetComponent<GameOverPanelController>().SetActivePanel(-1);
+                        return;
+                    }
+                    board[i, j] = 0;
+
+                    board[i, j] = 1;
+                    if (gameController.CheckWin(i, j, 1))
+                    {
+                        board[i, j] = -1; // Chặn người chơi
+                        ChangeBtnAiCheck(i, j);
+                        playerController.AiToPlayer();
+                        vectorList.Clear();
+                        return;
+                    }
+                    board[i, j] = 0;
+                }
+            }
+        }
+        // Nếu không thể thắng hoặc chặn, đánh ngẫu nhiên
+        Vector2 temp = vectorList[Random.Range(0, vectorList.Count)];
+        board[(int)temp.x, (int)temp.y] = -1;
+        ChangeBtnAiCheck((int)temp.x, (int)temp.y);
+        playerController.AiToPlayer();
+        vectorList.Clear();
+    }
+
+    void HardMode()
+    {
+
+        int[,] board = gameController.getBoard();
+        int bestScore = int.MinValue;
+        Vector2 bestMove = Vector2.zero;
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                if (board[i, j] == 0)
+                {
+                    board[i, j] = -1; // AI move
+                    int score = MinimaxNonRecursive(board);
+                    board[i, j] = 0; // Undo move
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                        bestMove = new Vector2(i, j);
+                    }
+                }
+            }
+        }
+        board[(int)bestMove.x, (int)bestMove.y] = -1;
+        ChangeBtnAiCheck((int)bestMove.x, (int)bestMove.y);
+        if (gameController.CheckWin2(-1))
+        {
+            gameOverPanel.GetComponent<GameOverPanelController>().SetActivePanel(-1);
+        }
+        else if (IsBoardFull(gameController.getBoard()))
+        {
+            gameOverPanel.GetComponent<GameOverPanelController>().SetActivePanel(0); // Hòa
+        }
+        else
+        {
+            playerController.AiToPlayer();
+
         }
 
     }
 
+
+
     void ChangeBtnAiCheck(int r, int c)
     {
-        // Add more checks if necessary
         string temp1 = r.ToString();
         string temp2 = c.ToString();
-
         string name = temp1 + temp2;
 
         GameObject btn = GameObject.FindWithTag(name);
@@ -111,8 +172,6 @@ public class AiSystem : MonoBehaviour
             return;
         }
         btnScript.ChangeBtnOnClick(r, c);
-        return;
-        // Add more null checks if necessary
     }
 
     public void MyArrayNow()
@@ -130,53 +189,87 @@ public class AiSystem : MonoBehaviour
         }
     }
 
-
-    int Minimax(int[,] board,int r, int c, int depth, bool isMaximizing)
+    public int MinimaxNonRecursive(int[,] board)
     {
-        if (gameController.CheckWin(r, c, -1)) // AI thắng
-            return 1;
-        if (gameController.CheckWin(r, c, 1)) // Người chơi thắng
-            return -1;
-        if (IsBoardFull(board)) // Hòa
-            return 0;
+        Stack<Node> stack = new Stack<Node>();
+        stack.Push(new Node(board, 0, true));
 
-        if (isMaximizing)
+        int bestVal = int.MinValue;
+
+        while (stack.Count > 0)
         {
-            int maxEval = int.MinValue;
-            for (int i = 0; i < 3; i++)
+            Node currentNode = stack.Pop();
+            int[,] currentBoard = currentNode.Board;
+            int depth = currentNode.Depth;
+            bool isMaximizingPlayer = currentNode.IsMaximizingPlayer;
+
+            if (gameController.CheckWin2(-1))
+                bestVal = Mathf.Max(bestVal, 10 - depth);
+            else if (gameController.CheckWin2(1))
+                bestVal = Mathf.Max(bestVal, depth - 10);
+            else if (IsBoardFull(currentBoard))
+                bestVal = Mathf.Max(bestVal, 0);
+            else
             {
-                for (int j = 0; j < 3; j++)
+                if (isMaximizingPlayer)
                 {
-                    if (board[i, j] == 0)
+                    for (int i = 0; i < 3; i++)
                     {
-                        board[i, j] = -1; // AI move
-                        int eval = Minimax(board,i,j, depth + 1, false);
-                        board[i, j] = 0; // Undo move
-                        maxEval = Mathf.Max(eval, maxEval);
+                        for (int j = 0; j < 3; j++)
+                        {
+                            if (currentBoard[i, j] == 0)
+                            {
+                                int[,] newBoard = (int[,])currentBoard.Clone();
+                                newBoard[i, j] = -1; // AI move
+                                stack.Push(new Node(newBoard, depth + 1, false));
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            if (currentBoard[i, j] == 0)
+                            {
+                                int[,] newBoard = (int[,])currentBoard.Clone();
+                                newBoard[i, j] = 1; // Player move
+                                stack.Push(new Node(newBoard, depth + 1, true));
+                            }
+                        }
                     }
                 }
             }
-            return maxEval;
         }
-        else
+        return bestVal;
+    }
+
+    public class Node
+    {
+        public int[,] Board { get; }
+        public int Depth { get; }
+        public bool IsMaximizingPlayer { get; }
+
+        public Node(int[,] board, int depth, bool isMaximizingPlayer)
         {
-            int minEval = int.MaxValue;
-            for (int i = 0; i < 3; i++)
-            {
-                for (int j = 0; j < 3; j++)
-                {
-                    if (board[i, j] == 0)
-                    {
-                        board[i, j] = 1; // Player move
-                        int eval = Minimax(board,i,j, depth + 1, true);
-                        board[i, j] = 0; // Undo move
-                        minEval = Mathf.Min(eval, minEval);
-                    }
-                }
-            }
-            return minEval;
+            Board = board;
+            Depth = depth;
+            IsMaximizingPlayer = isMaximizingPlayer;
         }
     }
+
+
+    int CheckStateGame(int player)
+    {
+        if (gameController.CheckWin2(player))
+            return player;
+        return 0;
+    }
+
+
+
     bool IsBoardFull(int[,] board)
     {
         for (int i = 0; i < 3; i++)
@@ -189,7 +282,4 @@ public class AiSystem : MonoBehaviour
         }
         return true;
     }
-
-
-
 }

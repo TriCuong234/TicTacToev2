@@ -17,6 +17,7 @@ public class MainMenuController : MonoBehaviour
     [SerializeField]
     private GameObject Exitbtn;
 
+    public GameObject choseMode;
     void Start()
     {
         PvPbtn.GetComponent<Button>().onClick.AddListener(OnClickPvP);
@@ -34,7 +35,7 @@ public class MainMenuController : MonoBehaviour
     }
     void OnClickPvE()
     {
-        print("hehe");
+        choseMode.SetActive(true);
     }
     void OnClickExit()
     {

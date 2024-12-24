@@ -2228,7 +2228,10 @@ MonoBehaviour:
   settingBtn: {fileID: 555217867}
   exitBtn: {fileID: 2082103345}
   continueBtn: {fileID: 834844167}
+  bgmSlider: {fileID: 233027546}
+  sfxSlider: {fileID: 1054542379}
   settingPanel: {fileID: 1160145575}
+  playerController: {fileID: 990514064}
 --- !u!1 &562853095
 GameObject:
   m_ObjectHideFlags: 0

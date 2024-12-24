@@ -24,8 +24,8 @@ public class PlayerController : MonoBehaviour
     private int player2Point = 0;
 
     private bool isPvP;
-
-
+        
+    private int timeNow;
     public GameObject gameInfoContainer;
 
     private Text Player1Timer;
@@ -114,7 +114,7 @@ public class PlayerController : MonoBehaviour
             Player2Timer.text = "";
             while (count >= 0)
             {
-
+                timeNow = count;
                 if (count == 60)
                     Player1Timer.text = "01:00";
                 if (count < 60 && count > 9)
@@ -201,5 +201,10 @@ public class PlayerController : MonoBehaviour
     public void ShowOverPanel(){
         gameOverPanel.GetComponent<GameOverPanelController>().SetActivePanel(this.player);
         return;
+    }
+
+    public int GetTimeNow()
+    {
+        return this.timeNow;
     }
 }

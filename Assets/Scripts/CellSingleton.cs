@@ -78,6 +78,7 @@ public class CellSingleton : MonoBehaviour
 
     public void ChangeBtnOnClick(int r, int c)
     {
+        AudioController.instance.PlaySFX();
         this.gameObject.GetComponent<Button>().interactable = false;
         ChangSprite(playerControllerScript.PlayerNow());
         playerControllerScript.CellClick(r, c);

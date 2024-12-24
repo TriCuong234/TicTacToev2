@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
     // Start is called before the first frame update
-    private int[,] board = new int[3,3];
+    private int[,] board = new int[3, 3];
     [SerializeField]
     private Button btn00;
     [SerializeField]
@@ -27,20 +27,23 @@ public class GameController : MonoBehaviour
     private Button btn22;
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
-    public void OriginBoard(){
-        int i,j = 0;
-        for (i = 0; i<3;i++){
-            for (j=0; j<3; j++){
-                board[i,j] = 0;
+    public void OriginBoard()
+    {
+        int i, j = 0;
+        for (i = 0; i < 3; i++)
+        {
+            for (j = 0; j < 3; j++)
+            {
+                board[i, j] = 0;
             }
         }
 
@@ -55,28 +58,37 @@ public class GameController : MonoBehaviour
         btn22.GetComponent<CellSingleton>().ResetAllChanged();
     }
 
-    public void ShowBoard(){
-        int i,j = 0;
-        for (i = 0; i<3;i++){
-            for (j=0; j<3; j++){
-                print(i+" "+ j+ ":"+board[i,j]);
+    public void ShowBoard()
+    {
+        int i, j = 0;
+        for (i = 0; i < 3; i++)
+        {
+            for (j = 0; j < 3; j++)
+            {
+                print(i + " " + j + ":" + board[i, j]);
             }
         }
     }
 
-    public void CheckBoard(int r, int c, int player){
-        if (player == 1){
-            this.board[r,c] = 1;
+    public void CheckBoard(int r, int c, int player)
+    {
+        if (player == 1)
+        {
+            this.board[r, c] = 1;
             return;
         }
-        this.board[r,c] = -1;
+        this.board[r, c] = -1;
     }
 
-    public int BoardLength(){
+    public int BoardLength()
+    {
         int count = 0;
-        for (int i = 0; i<3;i++){
-            for (int j=0; j<3; j++){
-                if (board[i,j] != 0){
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                if (board[i, j] != 0)
+                {
                     count++;
                 }
             }
@@ -84,19 +96,27 @@ public class GameController : MonoBehaviour
         return count;
     }
 
-    public bool CheckWin(int r, int c,int player){
+    public bool CheckWin(int r, int c, int player)
+    {
         // 
-        if (board[0,c] == board[1,c] && board[1,c] == board[2,c])
-        return true;
-        if (board[r,0] == board[r,1] && board[r,1] == board[r,2])
-        return true;
-        if (board[0,0] == board[1,1] && board[1,1] == board[2,2] && board[1,1] == player)
-        return true;
-        if (board[0,2] == board[1,1] && board[1,1] == board[2,0] && board[1,1] == player)
-        return true;
+        if (board[0, c] == board[1, c] && board[1, c] == board[2, c])
+            return true;
+        if (board[r, 0] == board[r, 1] && board[r, 1] == board[r, 2])
+            return true;
+        if (board[0, 0] == board[1, 1] && board[1, 1] == board[2, 2] && board[1, 1] == player)
+            return true;
+        if (board[0, 2] == board[1, 1] && board[1, 1] == board[2, 0] && board[1, 1] == player)
+            return true;
         return false;
     }
-    public int[,] getBoard(){
+
+    public bool CheckWin2(int player)
+    {
+        for (int i = 0; i < 3; i++) { if (board[i, 0] == player && board[i, 1] == player && board[i, 2] == player) return true; if (board[0, i] == player && board[1, i] == player && board[2, i] == player) return true; }
+        if (board[0, 0] == player && board[1, 1] == player && board[2, 2] == player) return true; if (board[0, 2] == player && board[1, 1] == player && board[2, 0] == player) return true; return false;
+    }
+    public int[,] getBoard()
+    {
         return this.board;
     }
 }
