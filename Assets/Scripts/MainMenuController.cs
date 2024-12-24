@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviour
@@ -26,7 +28,9 @@ public class MainMenuController : MonoBehaviour
 
     void OnClickPvP()
     {
-        print("hehe");
+        PlayerPrefs.SetInt("PvP", 1);
+        PlayerPrefs.Save();
+        SceneManager.LoadScene("GamePlay");
     }
     void OnClickPvE()
     {

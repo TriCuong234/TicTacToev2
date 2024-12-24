@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameOverPanelController : MonoBehaviour
@@ -15,11 +16,11 @@ public class GameOverPanelController : MonoBehaviour
     public GameObject gameOverPanel;
     [SerializeField]
     private GameController gameControllerScript;
-    
+
     [SerializeField]
     private PlayerController playerControllerScript;
-    
-    private int PlayerWin; 
+
+    private int PlayerWin;
 
     private bool ThisPanelActive = false;
     void Start()
@@ -37,24 +38,27 @@ public class GameOverPanelController : MonoBehaviour
     void OnClickContinueBtn()
     {
         this.ThisPanelActive = false;
-        DeActive();   
+        DeActive();
         gameControllerScript.OriginBoard();
-        if (PlayerWin == 1){
+        if (PlayerWin == 1)
+        {
             playerControllerScript.IncPlayerPoint(PlayerWin);
             player1Point.text = playerControllerScript.GetPlayerPoint(this.PlayerWin).ToString();
-            
+
             playerControllerScript.StopAllCoroutine();
             if (playerControllerScript.GetIsPvp()) playerControllerScript.ChangePlayer();
             playerControllerScript.StartTimer(60);
         }
-        if (PlayerWin == -1){
+        if (PlayerWin == -1)
+        {
             playerControllerScript.IncPlayerPoint(PlayerWin);
             player2Point.text = playerControllerScript.GetPlayerPoint(this.PlayerWin).ToString();
             playerControllerScript.StopAllCoroutine();
-            if (playerControllerScript.GetIsPvp()) playerControllerScript.ChangePlayer();
+            playerControllerScript.ChangePlayer();
             playerControllerScript.StartTimer(60);
         }
-        if (PlayerWin == 0){
+        if (PlayerWin == 0)
+        {
             playerControllerScript.StopAllCoroutine();
             if (playerControllerScript.GetIsPvp()) playerControllerScript.ChangePlayer();
             playerControllerScript.StartTimer(60);
@@ -62,7 +66,7 @@ public class GameOverPanelController : MonoBehaviour
     }
     void OnClickExitBtn()
     {
-        print("ext");
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void SetActivePanel(int player)
@@ -71,27 +75,31 @@ public class GameOverPanelController : MonoBehaviour
         this.ThisPanelActive = true;
         playerControllerScript.StopAllCoroutine();
         //gameOverPanel.GetComponent<Text>().text = content;
-        if (player == 1){
+        if (player == 1)
+        {
             this.gameOverPanel.GetComponentInChildren<Text>().text = "Player1 Win!";
             this.PlayerWin = 1;
         }
-        if (player == -1){
+        if (player == -1)
+        {
             this.gameOverPanel.GetComponentInChildren<Text>().text = "Player2 Win!";
             this.PlayerWin = -1;
         }
-        if (player == 0){
+        if (player == 0)
+        {
             this.gameOverPanel.GetComponentInChildren<Text>().text = "Draw!";
             this.PlayerWin = 0;
         }
-        
-        
+
+
     }
 
     void DeActive()
     {
         this.gameObject.SetActive(false);
     }
-    public bool GetThisPanelActive(){
+    public bool GetThisPanelActive()
+    {
         return this.ThisPanelActive;
     }
 }

@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour
     private int player1Point = 0;
     private int player2Point = 0;
 
-    private bool isPvP = false;
+    private bool isPvP;
 
 
     public GameObject gameInfoContainer;
@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        this.isPvP = PlayerPrefs.GetInt("PvP") == 1 ? true : false;
         gameControllerScript = gameController.GetComponent<GameController>();
         Player1Timer = GameObject.Find("Player1Timer").GetComponent<Text>();
         Player2Timer = GameObject.Find("Player2Timer").GetComponent<Text>();
@@ -71,6 +72,8 @@ public class PlayerController : MonoBehaviour
                 ai.AITurn();
                 return;
             }
+            this.player = 1;
+            return;
         }
         //AI turn lam gi di chu
     }
